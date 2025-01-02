@@ -1,4 +1,6 @@
 import re
+import os
+import hashlib
 
 from ghapi.all import GhApi
 
@@ -92,15 +94,33 @@ def _get_problem_statement_from_github_issue(
     owner: str, repo: str, issue_number: str, *, token: str | None = ""
 ) -> str:
     """Return problem statement from github issue"""
+    cache_dir = os.environ.get("GITHUB_CACHE_DIR")
+    psid = f"problem_statement_{owner}_issue{issue_number}_{hashlib.md5(repo.encode()).hexdigest()}.txt"
+    if cache_dir:
+        psid = os.path.join(cache_dir, psid)
+        if os.path.exists(psid):
+            with open(psid) as fp:
+                return fp.read()
     api = GhApi(token=token)
     issue = api.issues.get(owner, repo, issue_number)  # type: ignore
     title = issue.title if issue.title else ""
     body = issue.body if issue.body else ""
-    return f"{title}\n{body}\n"
+    problem_statement = f"{title}\n{body}\n"
+    if cache_dir:
+        with open(psid, "w") as fp:
+            fp.write(problem_statement)
+    return problem_statement
 
 
 def _get_associated_commit_urls(org: str, repo: str, issue_number: str, *, token: str = "") -> list[str]:
     """Return the URLs of commits that would close an issue."""
+    cache_dir = os.environ.get("GITHUB_CACHE_DIR")
+    psid = f"commit_urls_{org}_issue{issue_number}_{hashlib.md5(repo.encode()).hexdigest()}.txt"
+    if cache_dir:
+        psid = os.path.join(cache_dir, psid)
+        if os.path.exists(psid):
+            with open(psid) as fp:
+                return fp.readlines()
     api = GhApi(token=token)
     # Strangely the "pull_request" field of api.issues.get is often not set
     # so we have to go through the events to check if there's a commit
@@ -115,4 +135,7 @@ def _get_associated_commit_urls(org: str, repo: str, issue_number: str, *, token
         message = commit.commit.message
         if f"fixes #{issue_number}" in message.lower() or f"closes #{issue_number}" in message.lower():
             commit_urls.append(commit.html_url)
+    if cache_dir:
+        with open(psid, "w") as fp:
+            fp.writelines(commit_urls)
     return commit_urls
