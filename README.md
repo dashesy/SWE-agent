@@ -10,6 +10,30 @@
   <a href="https://arxiv.org/abs/2405.15793"><strong>Paper</strong></a>
 </p>
 
+## Build swed
+
+```bash
+docker build -f swed.Dockerfile -t swed .
+```
+
+Run
+
+```bash
+docker run --privileged -v /var/run/docker.sock:/var/run/docker.sock -it swed
+```
+
+Test
+
+```bash
+sweagent run \
+  --agent.model.name=gpt-4o \
+  --agent.model.per_instance_cost_limit=2.00 \
+  --env.repo.github_url=https://github.com/SWE-agent/test-repo \
+  --problem_statement.github_url=https://github.com/SWE-agent/test-repo/issues/1
+
+```
+
+# SWE-agent
 
 SWE-agent lets your language model of choice (e.g. GPT-4o or Claude Sonnet 3.5) autonomously use tools to:
 

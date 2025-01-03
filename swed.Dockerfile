@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 
 # Install third party tools
 RUN apt-get update && \
-    apt-get install -y bash gcc git jq wget curl g++ make && \
+    apt-get install -y bash gcc git jq wget curl g++ make vim && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -67,8 +67,3 @@ RUN . /root/miniconda3/etc/profile.d/conda.sh && conda activate swed\
 # RUN cd sweagent/frontend && npm install
 
 CMD ["/bin/bash"]
-
-# docker build -f swed.Dockerfile -t swed .
-# docker run --privileged -v /var/run/docker.sock:/var/run/docker.sock -it swed
-# -v 
-# 
