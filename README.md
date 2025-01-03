@@ -10,7 +10,9 @@
   <a href="https://arxiv.org/abs/2405.15793"><strong>Paper</strong></a>
 </p>
 
-## Build swed
+## SWE in Docker
+
+Build
 
 ```bash
 docker build -f swed.Dockerfile -t swed .
