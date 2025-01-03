@@ -30,7 +30,7 @@ docker run --privileged --network host -v /var/run/docker.sock:/var/run/docker.s
 
 Test
 
-To cache github issues for a later no-connection run
+To cache github issues for a later no-connection run (or use cached issues)
 
 ```bash
 export GITHUB_CACHE_DIR=problem_statements/
@@ -51,6 +51,16 @@ sweagent run \
 ```
 
 We need to pass `--env.deployment.image` with a prepared image to avoid the need to install extra deployment dependencies
+
+Export/Import
+
+```bash
+docker save swed_deployment:latest -o swed_deployment.tar
+docker save swed:latest -o swed.tar
+
+docker load -i swed_deployment.tar 
+docker load -i swed.tar 
+```
 
 # SWE-agent
 
