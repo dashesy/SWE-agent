@@ -18,6 +18,10 @@ Build
 docker build -f swed.Dockerfile -t swed .
 ```
 
+```bash
+docker build -f swed_deployment.Dockerfile -t swed_deployment .
+```
+
 Run
 
 ```bash
@@ -41,9 +45,12 @@ sweagent run \
   --agent.model.name=azure/gpt-4o\
   --agent.model.per_instance_cost_limit=2.00\
   --env.repo.github_url=https://github.com/SWE-agent/test-repo\
+  --env.deployment.image=swed_deployment\
   --problem_statement.github_url=https://github.com/SWE-agent/test-repo/issues/1
 
 ```
+
+We need to pass `--env.deployment.image` with a prepared image to avoid the need to install extra deployment dependencies
 
 # SWE-agent
 
