@@ -24,11 +24,21 @@ docker run --privileged -v /var/run/docker.sock:/var/run/docker.sock -it swed
 
 Test
 
+To cache github issues for a later no-connection run
+
 ```bash
+export GITHUB_CACHE_DIR=problem_statements/
+```
+
+```bash
+export AZURE_API_KEY="KEY"
+export AZURE_API_BASE="BASE"
+export AZURE_API_VERSION="VERSION"
+
 sweagent run \
-  --agent.model.name=gpt-4o \
-  --agent.model.per_instance_cost_limit=2.00 \
-  --env.repo.github_url=https://github.com/SWE-agent/test-repo \
+  --agent.model.name=azure/gpt-4o\
+  --agent.model.per_instance_cost_limit=2.00\
+  --env.repo.github_url=https://github.com/SWE-agent/test-repo\
   --problem_statement.github_url=https://github.com/SWE-agent/test-repo/issues/1
 
 ```
