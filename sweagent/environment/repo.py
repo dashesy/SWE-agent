@@ -8,6 +8,7 @@ from git import Repo as GitRepo
 from pydantic import BaseModel, ConfigDict, Field
 from swerex.deployment.abstract import AbstractDeployment
 from swerex.runtime.abstract import Command, UploadRequest
+from swerex.deployment.local import LocalDeployment
 from typing_extensions import Self
 
 from sweagent.utils.github import _parse_gh_repo_url
@@ -136,24 +137,52 @@ class GithubRepoConfig(BaseModel):
         base_commit = self.base_commit
         github_token = os.getenv("GITHUB_TOKEN", "")
         url = self._get_url_with_token(github_token)
+        cache_dir = os.environ.get("GITHUB_CACHE_DIR")
+        path = self.repo_name
+        if cache_dir:
+            path = os.path.join(cache_dir, self.repo_name, base_commit)
+        command = Command(
+                command=" && ".join(
+                    (
+                        f"mkdir {path}",
+                        f"cd {path}",
+                        "git init",
+                        f"git remote add origin {url}",
+                        f"git fetch --depth 1 origin {base_commit}",
+                        "git checkout FETCH_HEAD",
+                        "cd ..",
+                    )
+                ),
+                timeout=self.clone_timeout,
+                shell=True,
+                check=True,
+            )
+        if cache_dir:
+            path = os.path.join(cache_dir, self.repo_name, base_commit)
+            if not os.path.exists(path):
+                # clone the repo locally
+                local_deployment = LocalDeployment()
+                asyncio.run(local_deployment.start())
+                assert local_deployment.runtime.is_alive()
+                asyncio.run(
+                    local_deployment.runtime.execute(
+                        command
+                    ),
+                )
+                asyncio.run(local_deployment.stop())
+            assert os.path.exists(path), f"{self.repo_name}/{base_commit} from {url}"
+            asyncio.run(
+                deployment.runtime.upload(UploadRequest(source_path=str(path), target_path=f"/{self.repo_name}"))
+            )
+            r = asyncio.run(deployment.runtime.execute(Command(command=f"chown -R root:root {self.repo_name}", shell=True)))
+            if r.exit_code != 0:
+                msg = f"Failed to change permissions on copied repository (exit code: {r.exit_code}, stdout: {r.stdout}, stderr: {r.stderr})"
+                raise RuntimeError(msg)
+            return
+
         asyncio.run(
             deployment.runtime.execute(
-                Command(
-                    command=" && ".join(
-                        (
-                            f"mkdir {self.repo_name}",
-                            f"cd {self.repo_name}",
-                            "git init",
-                            f"git remote add origin {url}",
-                            f"git fetch --depth 1 origin {base_commit}",
-                            "git checkout FETCH_HEAD",
-                            "cd ..",
-                        )
-                    ),
-                    timeout=self.clone_timeout,
-                    shell=True,
-                    check=True,
-                )
+                command
             ),
         )
 

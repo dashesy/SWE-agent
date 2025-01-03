@@ -33,7 +33,7 @@ Test
 To cache github issues for a later no-connection run (or use cached issues)
 
 ```bash
-export GITHUB_CACHE_DIR=problem_statements/
+export GITHUB_CACHE_DIR=~/problem_statements/
 ```
 
 ```bash
