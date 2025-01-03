@@ -19,7 +19,7 @@ docker build -f swed.Dockerfile -t swed .
 Run
 
 ```bash
-docker run --privileged -v /var/run/docker.sock:/var/run/docker.sock -it swed
+docker run --privileged --network host -v /var/run/docker.sock:/var/run/docker.sock -it swed
 ```
 
 Test
