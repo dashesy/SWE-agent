@@ -25,7 +25,7 @@ docker build -f swed_deployment.Dockerfile -t swed_deployment .
 Run
 
 ```bash
-docker run --privileged --network host -v /var/run/docker.sock:/var/run/docker.sock -it swed
+docker run --privileged --network host -v /var/run/docker.sock:/var/run/docker.sock -v ~/swed_cache/:/root/swed_cache -it swed
 ```
 
 Test
@@ -59,7 +59,10 @@ docker save swed_deployment:latest -o swed_deployment.tar
 docker save swed:latest -o swed.tar
 
 docker load -i swed_deployment.tar 
-docker load -i swed.tar 
+docker load -i swed.tar
+
+docker stop $(docker ps -aq)
+docker system prune
 
 tar -czvf swed_cache.tar.gz ~/swed_cache/
 tar -xzvf swed_cache.tar.gz -C ~/ --one-top-level
