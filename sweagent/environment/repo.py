@@ -144,7 +144,7 @@ class GithubRepoConfig(BaseModel):
         command = Command(
                 command=" && ".join(
                     (
-                        f"mkdir {path}",
+                        f"mkdir -p {path}",
                         f"cd {path}",
                         "git init",
                         f"git remote add origin {url}",
@@ -163,7 +163,6 @@ class GithubRepoConfig(BaseModel):
                 # clone the repo locally
                 local_deployment = LocalDeployment()
                 asyncio.run(local_deployment.start())
-                assert local_deployment.runtime.is_alive()
                 asyncio.run(
                     local_deployment.runtime.execute(
                         command

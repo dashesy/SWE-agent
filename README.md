@@ -33,7 +33,7 @@ Test
 To cache github issues for a later no-connection run (or use cached issues)
 
 ```bash
-export GITHUB_CACHE_DIR=~/problem_statements/
+export GITHUB_CACHE_DIR=~/swed_cache/
 ```
 
 ```bash
@@ -60,6 +60,10 @@ docker save swed:latest -o swed.tar
 
 docker load -i swed_deployment.tar 
 docker load -i swed.tar 
+
+tar -czvf swed_cache.tar.gz ~/swed_cache/
+tar -xzvf swed_cache.tar.gz -C ~/ --one-top-level
+
 ```
 
 # SWE-agent

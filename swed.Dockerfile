@@ -45,6 +45,11 @@ COPY docker/requirements.txt /root/requirements.txt
 RUN . /root/miniconda3/etc/profile.d/conda.sh && conda activate swed\
     && pip install -r /root/requirements.txt
 
+# Extras
+RUN . /root/miniconda3/etc/profile.d/conda.sh && conda activate swed\
+&& pip install ipython
+
+# If need local changes
 # RUN mkdir /root/swe-rex
 # COPY swe-rex /root/swe-rex
 # RUN pip install -e /root/swe-rex
@@ -59,9 +64,6 @@ COPY . /SWE-agent
 RUN . /root/miniconda3/etc/profile.d/conda.sh && conda activate swed\
     && pip install -e '.'
 
-# Extras
-RUN . /root/miniconda3/etc/profile.d/conda.sh && conda activate swed\
-    && pip install ipython
 
 # # Install react dependencies ahead of time
 # RUN cd sweagent/frontend && npm install
