@@ -7,8 +7,10 @@ import time
 from abc import ABC, abstractmethod
 from pathlib import Path
 from threading import Lock
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any, Literal, cast
 
+import os
+import requests
 import litellm
 import litellm.types.utils
 from pydantic import BaseModel as PydanticBaseModel
@@ -498,17 +500,35 @@ class LiteLLMModel(AbstractModel):
         completion_kwargs = self.args.completion_kwargs
         if self.lm_provider == "anthropic":
             completion_kwargs["max_tokens"] = self.model_max_output_tokens
-        response: litellm.types.utils.ModelResponse = litellm.completion(  # type: ignore
-            model=self.args.name,
-            messages=messages,
-            temperature=self.args.temperature,
-            top_p=self.args.top_p,
-            api_version=self.args.api_version,
-            api_key=self._get_api_key(),
-            fallbacks=self.args.fallbacks,
-            **completion_kwargs,
-            **extra_args,
-        )
+
+        local_endpoint = os.environ.get("LOCAL_ENDPOINT")
+        if local_endpoint:
+            headers = json.loads(os.environ.get("LOCAL_HEADERS") or '{}')
+            stop = json.loads(os.environ.get("LOCAL_STOP") or '[]')
+            data = dict(
+                messages=messages,
+                temperature=self.args.temperature,
+                top_p=self.args.top_p,
+                max_tokens=int(os.environ.get("LOCAL_MAX_TOKENS") or 512),
+            )
+            if stop:
+                data["stop"] = stop
+            if self.tools.use_function_calling:
+                data["tools"] = self.tools.tools
+            c = requests.post(local_endpoint, json=data, headers=headers)
+            response = cast(litellm.types.utils.ModelResponse, c.json())
+        else:
+            response: litellm.types.utils.ModelResponse = litellm.completion(  # type: ignore
+                model=self.args.name,
+                messages=messages,
+                temperature=self.args.temperature,
+                top_p=self.args.top_p,
+                api_version=self.args.api_version,
+                api_key=self._get_api_key(),
+                fallbacks=self.args.fallbacks,
+                **completion_kwargs,
+                **extra_args,
+            )
         choices: litellm.types.utils.Choices = response.choices  # type: ignore
         output = choices[0].message.content or ""
         output_dict = {"message": output}
