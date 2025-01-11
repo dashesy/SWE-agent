@@ -316,6 +316,7 @@ class RunBatch:
         env.start()
         self._chooks.on_instance_start(index=0, env=env, problem_statement=instance.problem_statement)
         try:
+            # raise ValueError(f"Skip {instance=}")  # skip the run and just cache
             result = agent.run(
                 problem_statement=instance.problem_statement,
                 env=env,
