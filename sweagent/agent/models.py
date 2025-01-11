@@ -7,7 +7,7 @@ import time
 from abc import ABC, abstractmethod
 from pathlib import Path
 from threading import Lock
-from typing import Annotated, Any, Literal, cast
+from typing import Annotated, Any, Literal
 
 import os
 import requests
@@ -516,7 +516,7 @@ class LiteLLMModel(AbstractModel):
             if self.tools.use_function_calling:
                 data["tools"] = self.tools.tools
             c = requests.post(local_endpoint, json=data, headers=headers)
-            response = cast(litellm.types.utils.ModelResponse, c.json())
+            response = litellm.types.utils.ModelResponse(**c.json())
         else:
             response: litellm.types.utils.ModelResponse = litellm.completion(  # type: ignore
                 model=self.args.name,
