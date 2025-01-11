@@ -65,6 +65,11 @@ RUN . /root/miniconda3/etc/profile.d/conda.sh && conda activate swed\
     && pip install -e '.'
 
 
+#  Cache datasets
+RUN . /root/miniconda3/etc/profile.d/conda.sh && conda activate swed\
+    && python swed_init.py
+
+
 # # Install react dependencies ahead of time
 # RUN cd sweagent/frontend && npm install
 
