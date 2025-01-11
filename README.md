@@ -66,9 +66,6 @@ Export/Import
 docker save swed_deployment:latest -o swed_deployment.tar
 docker save swed:latest -o swed.tar
 
-for image in $(docker image ls swebench/* --format "{{.Repository}}:{{.Tag}}"); do docker save $image -o ${image%":latest"}.tar; done
-# docker save -o swebench.tar $(docker image ls swebench/* --format "{{.Repository}}:{{.Tag}}")
-
 docker load -i swed_deployment.tar 
 docker load -i swed.tar
 
@@ -78,6 +75,15 @@ docker system prune
 tar -czvf swed_cache.tar.gz ~/swed_cache/
 tar -xzvf swed_cache.tar.gz -C ~/ --one-top-level
 
+```
+
+Export/Import swebench images
+
+```bash
+mkdir swebench/
+for image in $(docker image ls swebench/* --format "{{.Repository}}:{{.Tag}}"); do docker save $image -o ${image%":latest"}.tar; done
+
+for image in swebench/*.tar; do docker load $image; done
 ```
 
 # SWE-agent
