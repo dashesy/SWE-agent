@@ -69,9 +69,6 @@ docker save swed:latest -o swed.tar
 docker load -i swed_deployment.tar 
 docker load -i swed.tar
 
-docker stop $(docker ps -aq)
-docker system prune
-
 tar -czvf swed_cache.tar.gz ~/swed_cache/
 tar -xzvf swed_cache.tar.gz -C ~/ --one-top-level
 
@@ -84,6 +81,13 @@ mkdir swebench/
 for image in $(docker image ls swebench/* --format "{{.Repository}}:{{.Tag}}"); do docker save $image -o ${image%":latest"}.tar; done
 
 for image in swebench/*.tar; do docker load $image; done
+```
+
+Clean up docker
+
+```bash
+docker stop $(docker ps -aq)
+docker system prune
 ```
 
 # SWE-agent
