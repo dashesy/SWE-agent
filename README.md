@@ -25,7 +25,7 @@ docker build -f swed_deployment.Dockerfile -t swed_deployment .
 Run
 
 ```bash
-docker run --privileged --network host -v /var/run/docker.sock:/var/run/docker.sock -v ~/swed_cache/:/root/swed_cache -w ~/output:/output -it swed
+docker run --privileged --network host -v /var/run/docker.sock:/var/run/docker.sock -v ~/swed_cache/:/root/swed_cache -w ~/output:/root/output -it swed
 ```
 
 Test
@@ -41,13 +41,21 @@ export AZURE_API_KEY="KEY"
 export AZURE_API_BASE="BASE"
 export AZURE_API_VERSION="VERSION"
 
+# single run test
 sweagent run \
   --agent.model.name=azure/gpt-4o\
   --agent.model.per_instance_cost_limit=2.00\
   --env.repo.github_url=https://github.com/SWE-agent/test-repo\
   --env.deployment.image=swed_deployment\
-  --problem_statement.github_url=https://github.com/SWE-agent/test-repo/issues/1
+  --problem_statement.github_url=https://github.com/SWE-agent/test-repo/issues/1\
+  --output_dir ~/output
 
+
+# batch run
+sweagent run-batch \
+  --agent.model.name=azure/gpt-4o\
+  --instances.deployment.image=swed_deployment\
+  --output_dir ~/output
 ```
 
 We need to pass `--env.deployment.image` with a prepared image to avoid the need to install extra deployment dependencies
