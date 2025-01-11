@@ -25,7 +25,7 @@ docker build -f swed_deployment.Dockerfile -t swed_deployment .
 Run
 
 ```bash
-docker run --privileged --network host -v /var/run/docker.sock:/var/run/docker.sock -v ~/swed_cache/:/root/swed_cache -it swed
+docker run --privileged --network host -v /var/run/docker.sock:/var/run/docker.sock -v ~/swed_cache/:/root/swed_cache -w ~/output:/output -it swed
 ```
 
 Test
