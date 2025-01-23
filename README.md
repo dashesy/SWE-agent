@@ -80,7 +80,7 @@ Export/Import swebench images
 mkdir swebench/
 for image in $(docker image ls swebench/* --format "{{.Repository}}:{{.Tag}}"); do docker save $image -o ${image%":latest"}.tar; done
 
-for image in swebench/*.tar; do docker load $image; done
+for image in swebench/*.tar; do docker load -i $image; done
 ```
 
 Clean up docker
