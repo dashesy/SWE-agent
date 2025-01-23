@@ -532,7 +532,7 @@ class LiteLLMModel(AbstractModel):
         choices: litellm.types.utils.Choices = response.choices  # type: ignore
         output = choices[0].message.content or ""
         output_dict = {"message": output}
-        cost = litellm.cost_calculator.completion_cost(response)
+        cost = float(os.environ.get("LOCAL_COST") or 0) or litellm.cost_calculator.completion_cost(response)
         output_tokens = litellm.utils.token_counter(text=output, model=self.args.name)
         self._update_stats(input_tokens=input_tokens, output_tokens=output_tokens, cost=cost)
         if self.tools.use_function_calling:

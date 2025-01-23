@@ -41,6 +41,13 @@ export AZURE_API_KEY="KEY"
 export AZURE_API_BASE="BASE"
 export AZURE_API_VERSION="VERSION"
 
+# or for local
+export LOCAL_ENDPOINT="http://local_endpoint"
+export LOCAL_HEADERS='{"key": "value"}'
+export LOCAL_STOP='[]'
+export LOCAL_MAX_TOKENS=2048
+export LOCAL_COST=0.01
+
 # single run test
 sweagent run \
   --agent.model.name=azure/gpt-4o\
@@ -54,6 +61,7 @@ sweagent run \
 # batch run
 sweagent run-batch \
   --agent.model.name=azure/gpt-4o\
+  --agent.model.per_instance_cost_limit=2.00\
   --instances.deployment.image=swed_deployment\
   --output_dir ~/output
 ```
