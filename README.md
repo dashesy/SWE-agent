@@ -66,6 +66,14 @@ sweagent run-batch \
   --output_dir ~/output
 ```
 
+# merge and eval
+
+```bash
+sweagent merge-preds ~/output/* --output ~/output/preds.json
+
+python -m swebench.harness.run_evaluation --split dev --predictions preds.json --run_id name
+```
+
 We need to pass `--env.deployment.image` with a prepared image to avoid the need to install extra deployment dependencies
 
 Export/Import
